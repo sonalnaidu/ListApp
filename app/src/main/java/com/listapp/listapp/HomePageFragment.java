@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -32,7 +33,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class HomePageFragment extends Fragment {
     Context mContext;
-    private List<ItemList> l_List;
+    ItemList l;
+    private List<ItemList> l_List= new ArrayList<>();
     private CollapsingToolbarLayout collapsingToolbarLayout;
     public RecyclerView recyclerView;
     private ListAdapter mAdapter;
@@ -47,7 +49,6 @@ public class HomePageFragment extends Fragment {
 
 
         mContext = getActivity();
-        ItemList l=null;
         //Set toolbar title
         collapsingToolbarLayout =
                 (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
@@ -72,9 +73,12 @@ public class HomePageFragment extends Fragment {
             if(result!=null) {
                 for(int i=0;i<result.length();i++) {
                     JSONObject list_obj= result.getJSONObject(i);
+                    Log.d("Bleh",list_obj.toString());
                  l= gson.fromJson(list_obj.toString(),ItemList.class);
+                    Log.d("Boo",l.getId().toString());
                     l_List.add(l);
                 }
+                Log.d("gah",l_List.toString());
             }
 
 
@@ -141,8 +145,11 @@ public class HomePageFragment extends Fragment {
 
     @Override
     public int getItemCount() {
+        if (l_list != null)
+            return l_list.size();
+        else
+            return 0;
 
-        return l_list.size();
     }
 }
 

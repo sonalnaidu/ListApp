@@ -1,23 +1,19 @@
 package com.listapp.listapp;
 
 import android.os.AsyncTask;
-
-import com.google.gson.JsonArray;
-import com.google.gson.internal.Excluder;
+import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by tg on 27-08-2016.
+ * Created by Sonal on 2/8/2017.
  */
 public class NetworkCall extends AsyncTask<String,Void,JSONArray> {
     @Override
@@ -33,7 +29,7 @@ public class NetworkCall extends AsyncTask<String,Void,JSONArray> {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
             JSONArray res =  new JSONArray(readStream(in));
-
+            Log.d("Resp",String.valueOf(res));
             urlConnection.disconnect();
 
             return res;
@@ -54,6 +50,7 @@ public class NetworkCall extends AsyncTask<String,Void,JSONArray> {
                 bo.write(i);
                 i = is.read();
             }
+
             return bo.toString();
         } catch (IOException e) {
             return "";
