@@ -11,6 +11,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,16 +38,13 @@ public class HomePageFragment extends Fragment {
     private ListAdapter mAdapter;
     GridLayoutManager gridLayoutManager;
 
-    private static final String url = "http://dev-lil-list.appspot.com/";
+    private static final String url = "http://dev-lil-list.appspot.com/lists";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_main, container, false);
         view.setTag("RecyclerviewFragment");
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter( mAdapter );
+
 
         mContext = getActivity();
         ItemList l=null;
@@ -56,6 +54,10 @@ public class HomePageFragment extends Fragment {
         collapsingToolbarLayout.setTitle("List It Down");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter( mAdapter );
         recyclerView.setNestedScrollingEnabled(false);
         gridLayoutManager = new GridLayoutManager(getActivity(),2);
 
@@ -63,8 +65,9 @@ public class HomePageFragment extends Fragment {
 
         try {
             JSONArray result = new NetworkCall().execute(url).get();
+            Log.d("RezJSON",String.valueOf(result));
             Gson gson = new Gson();
-            ItemList lists = gson.fromJson(result.toString(),ItemList.class);
+            //ItemList lists = gson.fromJson(result.toString(),ItemList.class);
 
             if(result!=null) {
                 for(int i=0;i<result.length();i++) {
@@ -74,7 +77,7 @@ public class HomePageFragment extends Fragment {
                 }
             }
 
-            mAdapter.notifyDataSetChanged();
+
             // specify an adapter
             mAdapter = new ListAdapter(l_List,getActivity());
             recyclerView.setHasFixedSize(true);
@@ -106,17 +109,6 @@ public class HomePageFragment extends Fragment {
     Context context;
 
 
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, list_item;
-
-        public ViewHolder(View v) {
-            super(v);
-            title = (TextView) v.findViewById(R.id.tv_title);
-            list_item = (TextView) v.findViewById(R.id.tv_details);
-        }
-    }
-
     public ListAdapter(List<ItemList> l_list, Context context){
         this.l_list = l_list;
         this.context = context;
@@ -126,18 +118,26 @@ public class HomePageFragment extends Fragment {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v=LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ItemList list = l_list.get(position);
+       final ItemList list = l_list.get(position);
         holder.title.setText(list.getTitle());
         holder.list_item.setText(list.getItems().toString());
 
     }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView title, list_item;
+
+            public ViewHolder(View v) {
+                super(v);
+                title = (TextView) v.findViewById(R.id.tv_title);
+                list_item = (TextView) v.findViewById(R.id.tv_details);
+            }
+        }
 
     @Override
     public int getItemCount() {
