@@ -5,7 +5,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -44,8 +50,24 @@ public class HomePageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_main, container, false);
+        final View view = inflater.inflate(R.layout.activity_main, container, false);
         view.setTag("RecyclerviewFragment");
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        if (fab != null)
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Fragment fragment = new AddNewListFragment();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fl_container, fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    Snackbar.make(view, "Make your own List.", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+
 
 
         mContext = getActivity();
@@ -101,6 +123,14 @@ public class HomePageFragment extends Fragment {
 
         return view;
     }
+
+
+
+    @Override
+    public void onAttach(Context context) throws NullPointerException {
+        super.onAttach(context);
+
+    }
 }
 
 
@@ -109,12 +139,17 @@ public class HomePageFragment extends Fragment {
     class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private String[] mDataset;
-    public List<ItemList> l_list;
-    Context context;
+    public List<ItemList> l_list = new ArrayList<>();
+    public RelativeLayout rl;
+        Context context;
+        public int i;
 
 
-    public ListAdapter(List<ItemList> l_list, Context context){
+
+        public ListAdapter(List<ItemList> l_list, Context context){
         this.l_list = l_list;
+        Log.d("Meh",String.valueOf(l_list.
+                size()));
         this.context = context;
     }
 
@@ -122,24 +157,46 @@ public class HomePageFragment extends Fragment {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v=LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        rl = (RelativeLayout)v.findViewById(R.id.ly);
         return new ViewHolder(v);
     }
 
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-       final ItemList list = l_list.get(position);
+        ItemList list = l_list.get(position);
+        Log.d("goo",String.valueOf(position));
         holder.title.setText(list.getTitle());
-        holder.list_item.setText(list.getItems().toString());
+       // LinearLayout ly= (LinearLayout)v.findViewById(R.id.ly);
+        JSONArray array=new JSONArray(list.getItems());
+
+        try {
+            holder.list_item1.setText("• "+array.getString(i)+"\n"+"• "+array.getString(i+1)+"\n"+"• "+array.getString(i+2)+"\n"+"• "+array.getString(i+3));
+            /*holder.list_item2.setText();
+            holder.list_item3.setText(array.getString(i+2));
+            holder.list_item4.setText();*/
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+       // holder.list_item.setText(list.getItems().toString());
+
+
 
     }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView title, list_item;
-
+            public TextView title, list_item1, list_item2,list_item3,list_item4,see_more;
             public ViewHolder(View v) {
                 super(v);
                 title = (TextView) v.findViewById(R.id.tv_title);
-                list_item = (TextView) v.findViewById(R.id.tv_details);
+                list_item1 = (TextView) v.findViewById(R.id.tv_item1);
+                /*list_item2 = (TextView) v.findViewById(R.id.tv_item2);
+                list_item3 = (TextView) v.findViewById(R.id.tv_item3);
+                list_item4 = (TextView) v.findViewById(R.id.tv_item4);*/
+                see_more = (TextView) v.findViewById(R.id.see_more);
             }
         }
 

@@ -49,4 +49,27 @@ public class MainActivity extends FragmentActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.fl_container,new HomePageFragment(),null);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+
+
+
+   /* @Override
+    public void onMovieClicked(Movie m) {
+        Fragment movieDetails = new MovieDetailFragment();
+        Bundle b = new Bundle();
+        b.putParcelable("movie",m);
+        movieDetails.setArguments(b);
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fl_container,movieDetails,null);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }*/
 }
